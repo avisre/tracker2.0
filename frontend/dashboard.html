@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stock Portfolio Visualizer</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Your Stock Portfolio</h1>
+
+      <!-- Portfolio Summary -->
+      <div id="portfolio-summary">
+        <div>
+          <p><strong>Total Value:</strong> $<span id="total-value">0</span></p>
+        </div>
+        <div>
+          <p>
+            <strong>Gain/Loss:</strong> $<span id="gain-loss">0</span> (<span
+              id="percentage-change"
+              >0</span
+            >%)
+          </p>
+        </div>
+      </div>
+
+      <!-- Input Form for Adding Stocks -->
+      <div id="add-stock">
+        <form id="add-stock-form">
+          <input
+            type="text"
+            id="stock-symbol"
+            placeholder="Enter company name or stock symbol"
+            required
+            autocomplete="off"
+          />
+          <ul id="search-results" style="display: none"></ul>
+          <input type="number" id="shares" placeholder="Shares" required />
+          <button type="submit">Add Stock</button>
+        </form>
+      </div>
+
+      <!-- Charts Section: Line and Doughnut Chart -->
+      <div id="charts">
+        <div class="chart-container">
+          <h2>Portfolio Value Over Time</h2>
+          <canvas id="portfolio-line-chart"></canvas>
+        </div>
+
+        <div class="chart-container">
+          <h2>Stock Allocation</h2>
+          <canvas id="stock-allocation-doughnut"></canvas>
+        </div>
+      </div>
+
+      <!-- Stock Table at the Bottom -->
+      <div id="stock-table">
+        <h2>Your Stocks</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Stock</th>
+              <th>Shares</th>
+              <th>Purchase Price</th>
+              <th>Current Price</th>
+              <th>Increase (Number/Percentage)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="stocks-list">
+            <!-- Populated with JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Logout Button -->
+      <button id="logout-btn">Logout</button>
+    </div>
+
+    <!-- Include the JavaScript file -->
+    <script src="script.js"></script>
+  </body>
+</html>

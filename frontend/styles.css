@@ -1,0 +1,164 @@
+/* Body Styling */
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f4f7f9;
+  margin: 0;
+  padding: 0;
+}
+
+/* Main Container */
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+/* Headers */
+h1,
+h2 {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 32px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+/* Portfolio Summary Styling */
+#portfolio-summary {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+}
+
+#portfolio-summary p {
+  margin: 5px 0;
+  font-size: 18px;
+}
+
+/* Add Stock Form Styling */
+#add-stock-form {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+#add-stock-form input,
+#add-stock-form button {
+  padding: 12px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+#add-stock-form input {
+  width: 45%;
+}
+
+#add-stock-form button {
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  width: 10%;
+  border: none;
+}
+
+#add-stock-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Charts Section */
+#charts {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.chart-container {
+  flex: 1;
+  margin-right: 20px;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.chart-container:last-child {
+  margin-right: 0;
+}
+
+/* Stock Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  margin-bottom: 30px;
+}
+
+thead th {
+  background-color: #f4f4f4;
+  padding: 15px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+
+tbody tr {
+  border-bottom: 1px solid #ddd;
+}
+
+tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+tbody td {
+  padding: 15px;
+}
+
+tbody td button {
+  background-color: #ff5c5c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+tbody td button:hover {
+  background-color: #d9534f;
+}
+
+/* Search Results Styling */
+#search-results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  width: 45%;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+#search-results li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+#search-results li:hover {
+  background-color: #f4f4f4;
+}
