@@ -1,4 +1,4 @@
-const API_URL = 'https://stockportfolio.pro//api';
+const API_URL = 'https://stockportfolio.pro/api';
 let portfolioValueOverTime = []; // To track the portfolio value over time
 let stockAllocation = {}; // To track stock allocation by symbol
 
