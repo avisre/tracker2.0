@@ -45,7 +45,7 @@ if (document.getElementById('login-form')) {
 if (document.getElementById('register-form')) {
   document.getElementById('register-form').addEventListener('submit', async (e) => {
     e.preventDefault(); // Prevent default form submission
-    const name = document.getElementById('name').value;
+  
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const errorMessage = document.getElementById('error-message'); // Error message div
