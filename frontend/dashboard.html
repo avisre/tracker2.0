@@ -72,7 +72,7 @@
     <link rel="stylesheet" href="styles.css" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
   </head>
-  <body>
+ <body>
     <div class="container">
       <h1>Your Stock Portfolio</h1>
 
@@ -107,16 +107,16 @@
         </form>
       </div>
 
-      <!-- Charts Section: Line and Doughnut Chart -->
+      <!-- Charts Section -->
       <div id="charts">
         <div class="chart-container">
-          <h2>Portfolio Value Over Time</h2>
-          <canvas id="portfolio-line-chart"></canvas>
+          <h2>Portfolio Growth Over Time (Stacked Area Chart)</h2>
+          <div id="portfolio-area-chart"></div>
         </div>
 
         <div class="chart-container">
-          <h2>Stock Allocation</h2>
-          <canvas id="stock-allocation-doughnut"></canvas>
+          <h2>Portfolio Value Over Time (Interactive Line Chart)</h2>
+          <div id="portfolio-line-chart"></div>
         </div>
       </div>
 
@@ -147,4 +147,6 @@
     <!-- Include the JavaScript file -->
     <script src="script.js"></script>
   </body>
+</html>
+
 </html>
