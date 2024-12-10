@@ -106,7 +106,6 @@ if (window.location.pathname.endsWith('dashboard.html')) {
     }
   }
 
-  // Update the portfolio UI with the fetched data
   function updatePortfolio(portfolio) {
     const stocksListElement = document.getElementById('stocks-list');
     const totalValueElement = document.getElementById('total-value');
@@ -123,55 +122,64 @@ if (window.location.pathname.endsWith('dashboard.html')) {
     stockSymbols = []; // Reset stock symbols
 
     portfolio.forEach((stock) => {
-      const stockValue = stock.currentPrice * stock.shares;
-      const purchaseValue = stock.purchasePrice * stock.shares;
-      totalValue += stockValue;
-      totalPurchaseValue += purchaseValue;
+        const stockValue = stock.currentPrice * stock.shares;
+        const purchaseValue = stock.purchasePrice * stock.shares;
+        totalValue += stockValue;
+        totalPurchaseValue += purchaseValue;
 
-      const increaseValue = (stock.currentPrice - stock.purchasePrice) * stock.shares;
-      const increasePercentage = ((stock.currentPrice - stock.purchasePrice) / stock.purchasePrice * 100).toFixed(2);
+        const increaseValue = (stock.currentPrice - stock.purchasePrice) * stock.shares;
+        const increasePercentage = ((stock.currentPrice - stock.purchasePrice) / stock.purchasePrice * 100).toFixed(2);
 
-      // Collect data for the stacked area chart
-      if (!stockSymbols.includes(stock.symbol)) {
-        stockSymbols.push(stock.symbol);
-      }
+        // Collect data for the stacked area chart
+        if (!stockSymbols.includes(stock.symbol)) {
+            stockSymbols.push(stock.symbol);
+        }
 
-      // For demo purposes, generate random data over 10 days
-      const stockData = [];
-      for (let day = 1; day <= 10; day++) {
-        stockData.push({
-          day: day,
-          value: stock.currentPrice * stock.shares * (1 + (Math.random() - 0.5) / 10), // Random fluctuation
+        // For demo purposes, generate random data over 10 days
+        const stockData = [];
+        for (let day = 1; day <= 10; day++) {
+            stockData.push({
+                day: day,
+                value: stock.currentPrice * stock.shares * (1 + (Math.random() - 0.5) / 10), // Random fluctuation
+            });
+        }
+        stockAllocationOverTime.push({
+            symbol: stock.symbol,
+            data: stockData,
         });
-      }
-      stockAllocationOverTime.push({
-        symbol: stock.symbol,
-        data: stockData,
-      });
 
-      const row = `<tr>
-          <td>${stock.symbol}</td>
-          <td>${stock.shares}</td>
-          <td>${stock.purchasePrice.toFixed(2)}</td>
-          <td>${stock.currentPrice.toFixed(2)}</td>
-          <td>${increaseValue.toFixed(2)} (${increasePercentage}%)</td>
-          <td><button class="delete-btn" onclick="deleteStock('${stock._id}')">Delete</button></td>
+        // Determine the color for increase (positive = green, negative = red)
+        let increaseColor = 'black'; // Default color
+        if (increasePercentage > 0) {
+            increaseColor = 'green'; // Positive increase
+        } else if (increasePercentage < 0) {
+            increaseColor = 'red'; // Negative increase
+        }
+
+        // Generate the table row with the color logic
+        const row = `<tr>
+            <td>${stock.symbol}</td>
+            <td>${stock.shares}</td>
+            <td>${stock.purchasePrice.toFixed(2)}</td>
+            <td>${stock.currentPrice.toFixed(2)}</td>
+            <td style="color: ${increaseColor};">${increaseValue.toFixed(2)} (${increasePercentage}%)</td>
+            <td><button class="delete-btn" onclick="deleteStock('${stock._id}')">Delete</button></td>
         </tr>`;
-      stocksListElement.innerHTML += row;
+        stocksListElement.innerHTML += row;
     });
 
     // For the interactive line chart, track total portfolio value over time
     portfolioValueOverTime = [];
     for (let day = 1; day <= 10; day++) {
-      let dayValue = 0;
-      stockAllocationOverTime.forEach(stock => {
-        const stockDayData = stock.data.find(d => d.day === day);
-        dayValue += stockDayData ? stockDayData.value : 0;
-      });
-      portfolioValueOverTime.push({
-        day: day,
-        value: dayValue,
-      });
+        let dayValue = 0;
+        stockAllocationOverTime.forEach(stock => {
+            const stockDayData = stock.data.find(d => d.day === day);
+            dayValue += stockDayData ? stockDayData.value : 0;
+        });
+        portfolioValueOverTime.push({
+            day: day,
+            value: dayValue,
+        });
     }
 
     const totalGainLoss = totalValue - totalPurchaseValue;
@@ -180,7 +188,16 @@ if (window.location.pathname.endsWith('dashboard.html')) {
     totalValueElement.textContent = totalValue.toFixed(2);
     gainLossElement.textContent = totalGainLoss.toFixed(2);
     percentageChangeElement.textContent = percentageChange;
-  }
+
+    // Set text color based on the percentage change
+    if (percentageChange > 0) {
+        percentageChangeElement.style.color = 'green'; // Positive change
+    } else if (percentageChange < 0) {
+        percentageChangeElement.style.color = 'red'; // Negative change
+    } else {
+        percentageChangeElement.style.color = 'black'; // No change
+    }
+}
 
   // Add stock to the portfolio
   document.getElementById('add-stock-form').addEventListener('submit', async (e) => {
@@ -407,6 +424,52 @@ if (window.location.pathname.endsWith('dashboard.html')) {
     svg.append('g').call(d3.axisLeft(yScale));
   }
   
+  // Search functionality for stock symbols
+  const companySearchInput = document.getElementById('stock-symbol');
+  const searchResults = document.getElementById('search-results');
+
+  companySearchInput.addEventListener('input', async (e) => {
+    const query = e.target.value.trim();
+    if (query.length > 2) {
+      const results = await searchCompanies(query);
+      showSearchResults(results);
+    } else {
+      searchResults.style.display = 'none';
+    }
+  });
+
+  // Fetch company matches from the backend
+  async function searchCompanies(query) {
+    try {
+      const response = await fetch(`${API_URL}/search/${query}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      const data = await response.json();
+      return data.slice(0, 5); // Limit to 5 results
+    } catch (error) {
+      console.error('Error fetching company data:', error);
+      return [];
+    }
+  }
+
+  // Display search results
+  function showSearchResults(results) {
+    searchResults.innerHTML = '';
+    results.forEach((result) => {
+      const li = document.createElement('li');
+      li.textContent = `${result.name} (${result.symbol})`;
+      li.dataset.symbol = result.symbol;
+      li.addEventListener('click', () => selectCompany(result.symbol));
+      searchResults.appendChild(li);
+    });
+    searchResults.style.display = 'block';
+  }
+
+  // Handle company selection from search results
+  function selectCompany(symbol) {
+    companySearchInput.value = symbol;
+    searchResults.style.display = 'none';
+  }
    // Logout functionality
    document.getElementById('logout-btn').addEventListener('click', () => {
     localStorage.removeItem('token'); // Remove token from localStorage
