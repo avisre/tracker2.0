@@ -46,6 +46,7 @@ if (document.getElementById('register-form')) {
   document.getElementById('register-form').addEventListener('submit', async (e) => {
     e.preventDefault(); // Prevent default form submission
   
+    const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const errorMessage = document.getElementById('error-message'); // Error message div
@@ -350,7 +351,13 @@ if (window.location.pathname.endsWith('dashboard.html')) {
 
   // D3.js Interactive Line Chart for Portfolio Value Over Time
   function drawInteractiveLineChart() {
-    const data = portfolioValueOverTime;
+    // Ensure the first value is set to 0
+    const data = portfolioValueOverTime.map((entry, index) => {
+      if (index === 0) {
+        return { ...entry, value: 0 };  // Set the first day value to 0
+      }
+      return entry;
+    });
 
     // Set up dimensions and margins
     const margin = { top: 20, right: 30, bottom: 50, left: 60 },
@@ -371,16 +378,12 @@ if (window.location.pathname.endsWith('dashboard.html')) {
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Set up scales
-    const xScale = d3.scaleLinear()
-      .domain(d3.extent(data, d => d.day))
-      .range([0, width]);
-
+    const xScale = d3.scaleLinear().domain([1, 10]).range([0, width]);
     const yScale = d3.scaleLinear()
       .domain([0, d3.max(data, d => d.value)])
-      .nice()
       .range([height, 0]);
 
-    // Define the line
+    // Create the line generator
     const line = d3.line()
       .x(d => xScale(d.day))
       .y(d => yScale(d.value))
@@ -388,121 +391,28 @@ if (window.location.pathname.endsWith('dashboard.html')) {
 
     // Add the line path
     svg.append('path')
-      .datum(data)
-      .attr('fill', 'none')
-      .attr('stroke', '#4e79a7')
-      .attr('stroke-width', 2)
-      .attr('d', line);
+      .data([data])
+      .attr('class', 'line')
+      .attr('d', line)
+      .style('stroke', 'steelblue')
+      .style('stroke-width', 2)
+      .style('fill', 'none');
 
     // Add X Axis
     svg.append('g')
       .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(xScale).ticks(10))
-      .append('text')
-      .attr('y', 35)
-      .attr('x', width / 2)
-      .attr('text-anchor', 'middle')
-      .attr('fill', 'black')
-      .text('Time');
+      .call(d3.axisBottom(xScale).ticks(10));
 
     // Add Y Axis
-    svg.append('g')
-      .call(d3.axisLeft(yScale))
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', -50)
-      .attr('x', -height / 2)
-      .attr('text-anchor', 'middle')
-      .attr('fill', 'black')
-      .text('Portfolio Value ($)');
-
-    // Add tooltip
-    const tooltip = d3.select('#portfolio-line-chart')
-      .append('div')
-      .style('opacity', 0)
-      .attr('class', 'tooltip');
-
-    // Add dots for each data point
-    svg.selectAll('dot')
-      .data(data)
-      .enter()
-      .append('circle')
-      .attr('cx', d => xScale(d.day))
-      .attr('cy', d => yScale(d.value))
-      .attr('r', 5)
-      .attr('fill', '#4e79a7')
-      .on('mouseover', function(event, d) {
-        d3.select(this).attr('r', 7);
-        tooltip
-          .style('opacity', 1)
-          .html(`<strong>Day ${d.day}</strong><br>Value: $${d.value.toFixed(2)}`)
-          .style('left', (event.pageX + 15) + 'px')
-          .style('top', (event.pageY - 28) + 'px');
-      })
-      .on('mousemove', function(event) {
-        tooltip
-          .style('left', (event.pageX + 15) + 'px')
-          .style('top', (event.pageY - 28) + 'px');
-      })
-      .on('mouseout', function() {
-        d3.select(this).attr('r', 5);
-        tooltip.style('opacity', 0);
-      });
+    svg.append('g').call(d3.axisLeft(yScale));
   }
-
-  // Search functionality for stock symbols
-  const companySearchInput = document.getElementById('stock-symbol');
-  const searchResults = document.getElementById('search-results');
-
-  companySearchInput.addEventListener('input', async (e) => {
-    const query = e.target.value.trim();
-    if (query.length > 2) {
-      const results = await searchCompanies(query);
-      showSearchResults(results);
-    } else {
-      searchResults.style.display = 'none';
-    }
-  });
-
-  // Fetch company matches from the backend
-  async function searchCompanies(query) {
-    try {
-      const response = await fetch(`${API_URL}/search/${query}`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-      });
-      const data = await response.json();
-      return data.slice(0, 5); // Limit to 5 results
-    } catch (error) {
-      console.error('Error fetching company data:', error);
-      return [];
-    }
-  }
-
-  // Display search results
-  function showSearchResults(results) {
-    searchResults.innerHTML = '';
-    results.forEach((result) => {
-      const li = document.createElement('li');
-      li.textContent = `${result.name} (${result.symbol})`;
-      li.dataset.symbol = result.symbol;
-      li.addEventListener('click', () => selectCompany(result.symbol));
-      searchResults.appendChild(li);
-    });
-    searchResults.style.display = 'block';
-  }
-
-  // Handle company selection from search results
-  function selectCompany(symbol) {
-    companySearchInput.value = symbol;
-    searchResults.style.display = 'none';
-  }
-
-  // Logout functionality
-  document.getElementById('logout-btn').addEventListener('click', () => {
+  
+   // Logout functionality
+   document.getElementById('logout-btn').addEventListener('click', () => {
     localStorage.removeItem('token'); // Remove token from localStorage
     window.location.href = 'index.html'; // Redirect to login page
   });
 
-  // Initial fetch of portfolio on page load
-  fetchPortfolio();
+
+  fetchPortfolio(); // Fetch portfolio data when the page loads
 }
